@@ -362,7 +362,7 @@
         </div>
       </div>
       <span class="hint-btn" id="saveDefaultsBtn">Guardar estos valores por defecto</span>
-      <div class="defaults-note">Estos campos suelen repetirse entre certificados: al pulsar se recuerdan para rellenarse solos en el próximo.</div>
+      <div class="defaults-note">Medición realizada por, Procedimiento/s y R.I. se rellenan solos siempre. El resto de campos se recuerdan al pulsar.</div>
     </div>
   </details>
 
@@ -619,12 +619,35 @@ function setFormData(data){
   sigCliente.setData(data.firmaCliente || '');
 }
 
-const DEFAULT_FIELDS=['tecnico','medicionPor','procedimiento','equipoMedida','material','riEmpresa','notificacion'];
+/* Campos que ya NO se guardan como "por defecto": son fijos y se rellenan solos */
+const DEFAULT_FIELDS=['tecnico','equipoMedida','material','notificacion'];
+
+/* ---------- Campos fijos (editar aquí si cambian) ---------- */
+const FIJO_MEDICION_POR = 'ASCI';
+const FIJO_PROCEDIMIENTO_BASE = 'Real Decreto 164/2025, de 4 de marzo,';
+const FIJO_REGISTRO_INDUSTRIAL = 'ALL IN FIRE, S.L. - 03-B-ECC-00034432';
+
+let certCargadoDeHistorial = false;
+
+function procedimientoConFechaHora(){
+  const n=new Date();
+  const p=v=>String(v).padStart(2,'0');
+  const fecha=`${p(n.getDate())}/${p(n.getMonth()+1)}/${n.getFullYear()}`;
+  const hora=`${p(n.getHours())}:${p(n.getMinutes())}`;
+  return `${FIJO_PROCEDIMIENTO_BASE} ${fecha} ${hora}`;
+}
+
+function aplicarFijos(){
+  document.getElementById('medicionPor').value = FIJO_MEDICION_POR;
+  document.getElementById('procedimiento').value = procedimientoConFechaHora();
+  document.getElementById('riEmpresa').value = FIJO_REGISTRO_INDUSTRIAL;
+}
 
 async function applyDefaults(){
   const d=await storageGet('cert-defaults');
-  if(!d) return;
-  DEFAULT_FIELDS.forEach(id=>{ if(d[id]) document.getElementById(id).value=d[id]; });
+  if(d) DEFAULT_FIELDS.forEach(id=>{ if(d[id]) document.getElementById(id).value=d[id]; });
+  aplicarFijos();
+  certCargadoDeHistorial=false;
 }
 
 document.getElementById('saveDefaultsBtn').addEventListener('click', async ()=>{
@@ -684,6 +707,7 @@ async function loadHistory(){
       const data=await storageGet('cert:'+entry.id);
       if(data){
         setFormData(data);
+        certCargadoDeHistorial=true;
         document.getElementById('histSection').open=false;
         toast('Certificado cargado — puedes editarlo y generar de nuevo');
         window.scrollTo({top:0,behavior:'smooth'});
@@ -832,6 +856,9 @@ function generatePdf(data){
 }
 
 document.getElementById('generateBtn').addEventListener('click', async ()=>{
+  if(!certCargadoDeHistorial){
+    document.getElementById('procedimiento').value = procedimientoConFechaHora();
+  }
   const data=getFormData();
   if(!data.cliente){
     toast('Añade al menos el nombre del cliente');

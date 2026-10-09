@@ -1,7 +1,7 @@
 // Service Worker — Asci Certificados
 // Sube el número de versión cada vez que publiques cambios en index.html
 // para que los teléfonos que ya instalaron la app descarguen la nueva versión.
-const CACHE_VERSION = 'asci-certificados-v1';
+const CACHE_VERSION = 'asci-certificados-v2';
 
 const APP_SHELL = [
   './',
