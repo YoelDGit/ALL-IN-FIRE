@@ -362,7 +362,7 @@
         </div>
       </div>
       <span class="hint-btn" id="saveDefaultsBtn">Guardar estos valores por defecto</span>
-      <div class="defaults-note">Medición realizada por, Procedimiento/s y R.I. se rellenan solos siempre. El resto de campos se recuerdan al pulsar.</div>
+      <div class="defaults-note">Medición realizada por, Procedimiento/s, Equipo de medida y R.I. se rellenan solos siempre. El resto de campos se recuerdan al pulsar.</div>
     </div>
   </details>
 
@@ -620,12 +620,13 @@ function setFormData(data){
 }
 
 /* Campos que ya NO se guardan como "por defecto": son fijos y se rellenan solos */
-const DEFAULT_FIELDS=['tecnico','equipoMedida','material','notificacion'];
+const DEFAULT_FIELDS=['tecnico','material','notificacion'];
 
 /* ---------- Campos fijos (editar aquí si cambian) ---------- */
 const FIJO_MEDICION_POR = 'ASCI';
 const FIJO_PROCEDIMIENTO_BASE = 'Real Decreto 164/2025, de 4 de marzo,';
 const FIJO_REGISTRO_INDUSTRIAL = 'ALL IN FIRE, S.L. - 03-B-ECC-00034432';
+const FIJO_EQUIPO_MEDIDA = 'Caudalímetro de ultrasonidos PCE-TDS 100 H/HS';
 
 let certCargadoDeHistorial = false;
 
@@ -641,6 +642,7 @@ function aplicarFijos(){
   document.getElementById('medicionPor').value = FIJO_MEDICION_POR;
   document.getElementById('procedimiento').value = procedimientoConFechaHora();
   document.getElementById('riEmpresa').value = FIJO_REGISTRO_INDUSTRIAL;
+  document.getElementById('equipoMedida').value = FIJO_EQUIPO_MEDIDA;
 }
 
 async function applyDefaults(){
